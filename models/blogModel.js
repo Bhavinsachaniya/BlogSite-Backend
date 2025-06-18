@@ -22,6 +22,10 @@ const postSchema = new mongoose.Schema({
         type:Date,
         default:Date.now,
     },
+    tagid:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'tags',
+    }
 });
 
 module.exports = mongoose.model('Post', postSchema);

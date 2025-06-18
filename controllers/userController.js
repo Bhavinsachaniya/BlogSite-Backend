@@ -2,11 +2,12 @@ const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendOtpEmail = require('../Utils/mailer');
+const post = require('../models/blogModel');
 
-//* checkUserExists ?
+//* checkUserExists 
 
-const checkUserExists =  async (email) => {
-    return await User.findOne({email});
+const checkUserExists = async (email) => {
+    return await User.findOne({ email });
 }
 
 //* hashPassword converter function
@@ -22,21 +23,21 @@ const genrateToken = (userId) => {
     return jwt.sign(
         { id: userId },          //*ID
         process.env.JWT_SECRET,  //*SECRET
-        { expiresIn: '30d'});    //* Duration of expire
+        { expiresIn: '30d' });    //* Duration of expire
 };
 
 
 //* Sign Up Controller
 
-const signUp = async (req,res) => {
-    const { name,  email, password} = req.body;
+const signUp = async (req, res) => {
+    const { name, email, password } = req.body;
 
-    try{
+    try {
         //* Find the User Exist or not
         const userExists = await checkUserExists(email);
 
-        if(userExists){
-            return res.status(400).json({message: 'user already exists in DB'});
+        if (userExists) {
+            return res.status(400).json({ message: 'user already exists in DB' });
         }
 
         const hashedPassword = await hashPassword(password);
@@ -53,14 +54,14 @@ const signUp = async (req,res) => {
 
         res.status(202).json({
             token,
-            user:{
+            user: {
                 id: newUser._id,
                 name: newUser.name,
                 email: newUser.email
             }
         });
-    } catch(error){
-        res.status(500).json({message: 'Error signing up user', error: error.message});
+    } catch (error) {
+        res.status(500).json({ message: 'Error signing up user', error: error.message });
     }
 };
 
@@ -69,71 +70,73 @@ const signUp = async (req,res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
 
-    try{
+    try {
         //* Check user have account or not
         const user = await checkUserExists(email);
-        if(!user){
-            return res.status(400).json({message: 'Invalid email or password'});
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch){
-            return res.status(400).json({message: 'Invalid email or password'});
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid email or password' });
         }
-
+        await sendOtpEmail(user.email, "hello");
         const token = genrateToken(user._id);
-        
+
         res.json({
             token,
-            user:{
-                id:user._id,
-                name:user.name,
-                email:user.email
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
             }
         });
-    } catch(error) {
-        res.status(500).json({message: 'Error logging in user', error:error.message});
+    } catch (error) {
+        res.status(500).json({ message: 'Error logging in user', error: error.message });
     }
 };
 
 //* Send OTP for login
-const sendOtpLogin = async (req,res) => {
-    const {email} =  req.body;
-
-    try{
+const sendOtpLogin = async (req, res) => {
+    const { email } = req.body;
+    console.log(email);
+    try {
         const user = await checkUserExists(email);
-        if(!user){
-            return res.status(400).json({message: 'User not found'});
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
         }
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiry = Date.now() + 10*60*1000; //* 10 Minutes
+        const otpExpiry = Date.now() + 10 * 60 * 1000; //* 10 Minutes
 
         user.otp = otp;
         user.otpExpiry = otpExpiry;
         await user.save();
 
         await sendOtpEmail(user.email, otp);
-        
-        res.status(200).json({message: 'OTP send to your email'});
 
-    }catch(error){
-        res.status(500).json({message: 'Error sending OTP', error:error.message});
+        res.status(200).json({ message: 'OTP send to your email' });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error sending OTP', error: error.message });
     }
 }
 //* Verify Otp and Login
-const VerifyOtpLogin = async (req,res) => {
-    const {email, otp} = req.body;
+const VerifyOtpLogin = async (req, res) => {
+    const { email, otp } = req.body;
 
-    try{
+
+
+    try {
         const user = await checkUserExists(email);
-        
-        if(!user){
-            return res.status(400).json({message: 'User not found'});
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
         }
 
-        if(user.otp !== otp || user.otpExpiry < Date.now()){
-            return res.status(400).json({message: 'Invalid or expired OTP'});
+        if (user.otp !== otp || user.otpExpiry < Date.now()) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
         }
 
         //* Clear Otp fields
@@ -145,22 +148,59 @@ const VerifyOtpLogin = async (req,res) => {
 
         res.status(200).json({
             token,
-            user:{
+            user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
             }
         });
     }
-    catch(error)
-    {
-        return res.status(400).json({message:'Error Verifying OTP', error: error.message});
+    catch (error) {
+        return res.status(400).json({ message: 'Error Verifying OTP', error: error.message });
     }
+};
+
+const authorAccountDelete = async (req, res) => {
+    const { author } = req.body;
+
+    if (!author) {
+        return res
+            .status(404)
+            .json({
+                message: 'Author name is required for deleting the Account'
+            })
+    };
+
+
+    try {
+        const deleteAccount = await User.findOneAndDelete({ author });
+        const deletedAllBlog = await post.deleteMany({ author });
+
+        return res
+            .status(200)
+            .json({
+                sucess: true,
+                message: `${author} sucessfully deleted`,
+                data: deleteAccount,
+                deletedAllBlog: true
+            })
+    }
+    catch (error) {
+        return res
+            .status(404)
+            .json({
+                sucess: false,
+                message: "Error getting in the author deleting",
+                error: error.message
+            })
+    }
+
 }
 
 module.exports = {
     signUp,
     login,
-    sendOtpLogin,   
-    VerifyOtpLogin  
+    sendOtpLogin,
+    VerifyOtpLogin,
+    authorAccountDelete
 };

@@ -169,7 +169,7 @@ EMAIL_PASS=your_email_password
 
 ## 📨 API Request / Response Samples (All)
 
-Please refer to the dedicated [API\_REQUEST\_RESPONSE.md](apiReqRes.md) file for detailed:
+Please refer to the dedicated [API\_REQUEST\_RESPONSE.md](API_REQUEST_RESPONSE.md) file for detailed:
 
 * 📬 Sample JSON requests
 * 💌 JSON responses

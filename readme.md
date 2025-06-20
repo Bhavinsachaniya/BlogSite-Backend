@@ -50,7 +50,7 @@ This project is a **modular backend service** for a real-world blogging platform
 ### 📁 Code Structure
 
 ```bash
-blog-api/
+BlogSite-Backend/
 |
 ├── config/
 │   └── db.js

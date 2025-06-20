@@ -28,16 +28,23 @@ const genrateToken = (userId) => {
 
 
 //* Sign Up Controller
-
 const signUp = async (req, res) => {
-    const { name, email, password } = req.body;
-
     try {
-        //* Find the User Exist or not
-        const userExists = await checkUserExists(email);
+        const { name, email, password } = req.body;
 
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'All fields (name, email, password) are required'
+            });
+        }
+
+        const userExists = await checkUserExists(email);
         if (userExists) {
-            return res.status(400).json({ message: 'user already exists in DB' });
+            return res.status(400).json({
+                success: false,
+                message: 'User already exists in DB'
+            });
         }
 
         const hashedPassword = await hashPassword(password);
@@ -52,7 +59,9 @@ const signUp = async (req, res) => {
 
         const token = genrateToken(newUser._id);
 
-        res.status(202).json({
+        return res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
             token,
             user: {
                 id: newUser._id,
@@ -60,31 +69,44 @@ const signUp = async (req, res) => {
                 email: newUser.email
             }
         });
+
     } catch (error) {
-        res.status(500).json({ message: 'Error signing up user', error: error.message });
+        return res.status(500).json({
+            success: false,
+            message: 'Error signing up user',
+            error: error.message
+        });
     }
 };
 
-//* login Function
 
+
+//* login Function
 const login = async (req, res) => {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+    }
+
     try {
-        //* Check user have account or not
         const user = await checkUserExists(email);
+
         if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid credentials checkUserExists' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
+
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid credentials bcrypt' });
         }
-        await sendOtpEmail(user.email, "hello");
+
         const token = genrateToken(user._id);
 
-        res.json({
+        return res.status(200).json({
+            success: true,
+            message: 'Login successful',
             token,
             user: {
                 id: user._id,
@@ -92,10 +114,12 @@ const login = async (req, res) => {
                 email: user.email
             }
         });
+
     } catch (error) {
-        res.status(500).json({ message: 'Error logging in user', error: error.message });
+        return res.status(500).json({ message: 'Error logging in user', error: error.message });
     }
 };
+
 
 //* Send OTP for login
 const sendOtpLogin = async (req, res) => {

@@ -1,19 +1,68 @@
-# 📝 Blog API - Node.js + Express + MongoDB
+# 📝 Blog API – Full-Stack Backend (NodeJS + Express + MongoDB)
 
-This is a full-featured REST API built with **Node.js**, **Express**, and **MongoDB (Mongoose)** that powers a blog system with user authentication, blog creation, user following/unfollowing, email-based OTP login, comments, and likes.
+> A secure and modular REST API backend for a **Blogging Platform** enabling user authentication (JWT & OTP), blog publishing, commenting, liking, and follow system between users.
 
 ---
 
-## 📁 Project Structure
+## 📖 Table of Contents
 
-```
+* [🧠 About](#-about)
+* [✨ Features](#-features)
+* [📦 Folder Structure](#-folder-structure)
+
+  * [📁 Code Tree](#code-structure)
+  * [🔍 Folder Breakdown](#-folder-breakdown--details)
+* [⚙️ Tech Stack](#-tech-stack)
+* [🚀 Setup & Installation](#-setup--installation)
+* [🔑 Environment Variables](#-environment-variables)
+* [📡 API Endpoints](#-api-endpoints)
+* [📨 API Request / Response Samples (All)](#-api-request--response-samples-all)
+* [🗂️ Database Schema](#-database-schema)
+* [🧪 Testing](#-testing)
+* [🤝 Contributing](#-contributing)
+* [📄 License](#-license)
+
+---
+
+## 🧠 About
+
+This project is a **modular backend service** for a real-world blogging platform:
+
+* Allows secure email/password and OTP-based user login.
+* Authenticated users can create, delete & view blogs.
+* Users can follow/unfollow each other, comment & like posts.
+
+---
+
+## ✨ Features
+
+* 🔒 OTP & Password-Based Login (JWT-secured)
+* ✍️ Blogging System (Create, Read, Delete)
+* 📌 Tags-ready blog structure (Schema in place)
+* 💬 Commenting System (Add, Get, Delete)
+* 👍 Like System (Toggle and Count)
+* 👥 Follow System (Followers & Followed)
+
+---
+
+## 📦 Folder Structure
+
+### 📁 Code Structure
+
+```bash
+blog-api/
+|
 ├── config/
 │   └── db.js
+│
 ├── controllers/
 │   ├── blogGenrate.controller.js
-│   ├── follow.Controller.js
-│   ├── userController.js
-│   ├── index.js
+│   ├── comments.controller.js
+│   ├── follower.Controller.js
+│   ├── like.Controller.js
+│   ├── user.Controller.js
+│   └── index.js
+│
 ├── models/
 │   ├── blogModel.js
 │   ├── commentModel.js
@@ -21,13 +70,19 @@ This is a full-featured REST API built with **Node.js**, **Express**, and **Mong
 │   ├── likeModel.js
 │   ├── tagsModel.js
 │   └── userModel.js
+│
 ├── routes/
-│   ├── index.js
-│   └── v1/
-│       ├── blog.Routes.js
-│       └── user.Routes.js
+│   ├── v1/
+│   │   ├── auth.Routes.js
+│   │   ├── blog.Routes.js
+│   │   ├── comment.Routes.js
+│   │   ├── like.Routes.js
+│   │   └── user.Routes.js
+│   └── index.js
+│
 ├── Utils/
 │   └── mailer.js
+│
 ├── .env
 ├── .gitignore
 ├── app.js
@@ -36,196 +91,136 @@ This is a full-featured REST API built with **Node.js**, **Express**, and **Mong
 
 ---
 
-## ⚙️ Features
+### 🔍 Folder Breakdown + Details
 
-- ✅ User signup/login with JWT  
-- 📧 Email OTP-based login  
-- ➕ Create/read/delete blogs  
-- 👥 Follow/unfollow users  
-- 🧠 Comments and likes structure (models ready for expansion)  
-- 📚 Tags support for blogs  
-- 🚀 MongoDB integration using **Mongoose**  
-- 🔐 Password hashing + authentication  
+* `/config/db.js`: MongoDB connection logic.
+* `/controllers/`: Handles all business logic.
+* `/models/`: Mongoose schemas for database collections.
+* `/routes/`: API endpoint definitions.
+* `/Utils/`: Mailer utility for OTP.
+* `app.js`: Main entry point.
 
 ---
 
-## 🔧 Technologies
+## ⚙️ Tech Stack
 
-- **Node.js**  
-- **Express.js**  
-- **MongoDB** & **Mongoose**  
-- **JWT**  
-- **Bcrypt**  
-- **Nodemailer**  
-- **dotenv**  
+| Technology | Role                |
+| ---------- | ------------------- |
+| Node.js    | Runtime environment |
+| Express.js | HTTP server         |
+| MongoDB    | Document DB         |
+| Mongoose   | ODM for MongoDB     |
+| JWT        | Auth token issuing  |
+| Bcrypt     | Password hashing    |
+| Nodemailer | Send OTP emails     |
+| dotenv     | Environment config  |
 
 ---
 
-## 📦 Installation
-
-Clone the repository:
+## 🚀 Setup & Installation
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-name>
-```
-
-Install dependencies:
-
-```bash
+git clone https://github.com/bhavinsachaniya/BlogSite-Backend.git
+cd BlogSite-Backend
 npm install
+touch .env
+npm start
 ```
 
-Create a `.env` file in the root and add:
+---
+
+## 🔑 Environment Variables
 
 ```env
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>?retryWrites=true&w=majority
-JWT_SECRET=your-very-secret-key
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-email-password
+PORT=3000
+MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/dbname
+JWT_SECRET=your_secret_key
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_password
 ```
 
 ---
 
-## ▶️ Run the App
+## 📡 API Endpoints
 
-```bash
-npm start
-```
-
-The server will start on:  
-📍 `http://localhost:3000`
-
----
-
-## 🔌 API Routes
-
-### 🧑 User Auth
-
-| API                        | METHOD | DESCRIPTION                |
-|---------------------------|--------|----------------------------|
-| `/api/auth/signup`        | POST   | Register new user          |
-| `/api/auth/login`         | POST   | Login with email/password  |
-| `/api/auth/send-otp`      | POST   | Send OTP for email login   |
-| `/api/auth/login/verify`  | POST   | Verify OTP and login       |
-| `/api/auth/deleteAuthor`  | POST   | Delete user + all blogs    |
-
-### 📝 Blog Routes
-
-| API                          | METHOD | DESCRIPTION                  |
-|-----------------------------|--------|------------------------------|
-| `/api/blog/createBlog`      | POST   | Create a blog post           |
-| `/api/blog/readAll`         | GET    | Read all blogs               |
-| `/api/blog/authorAllblog`   | GET    | Get blogs by author ID       |
-| `/api/blog/deleteBlogPost`  | POST   | Delete blog by title/author  |
-
-### 👥 Follow System
-
-| API                        | METHOD | DESCRIPTION                   |
-|---------------------------|--------|-------------------------------|
-| `/api/auth/followUser`    | POST   | Follow another user           |
-| `/api/auth/unfollowUser`  | POST   | Unfollow a user               |
-| `/api/auth/:userId`       | GET    | Get users you're following    |
-| `/api/auth/getFollowers`  | GET    | Get list of users following you |
+| CATEGORY  | METHOD | ENDPOINT                       | DESCRIPTION               |
+| --------- | ------ | ------------------------------ | ------------------------- |
+| Auth      | POST   | `/api/auth/signup`             | Register user             |
+|           | POST   | `/api/auth/login`              | Login with password       |
+|           | POST   | `/api/auth/send-otp`           | Send OTP                  |
+|           | POST   | `/api/auth/login/verify`       | Verify OTP                |
+|           | POST   | `/api/auth/deleteAuthor`       | Delete user + all blogs   |
+| Blog      | POST   | `/api/blog/createBlog`         | Create blog post          |
+|           | GET    | `/api/blog/readAll`            | Get all blogs             |
+|           | GET    | `/api/blog/authorAllblog`      | Get blogs by author       |
+|           | POST   | `/api/blog/deleteBlogPost`     | Delete blog by title      |
+| Comments  | POST   | `/api/com/addcomment`          | Add comment               |
+|           | POST   | `/api/com/allComments`         | Get comments by blog      |
+|           | POST   | `/api/com/deleteComment`       | Delete comment            |
+| Likes     | POST   | `/api/like/addlike`            | Toggle like               |
+|           | GET    | `/api/like/getalllike/:blogId` | Get like count            |
+|           | POST   | `/api/like/getAllLikeDetails`  | Get list of likes (users) |
+| Followers | POST   | `/api/user/followUser`         | Follow user               |
+|           | POST   | `/api/user/unfollowUser`       | Unfollow user             |
+|           | POST   | `/api/user/getFollowers`       | Get followers             |
+|           | GET    | `/api/user/:userId`            | Get following             |
 
 ---
 
-## 🧪 Sample Request Bodies
+## 📨 API Request / Response Samples (All)
 
-### 🔐 User Auth
+Please refer to the dedicated [API\_REQUEST\_RESPONSE.md](apiReqRes.md) file for detailed:
 
-```json
-// /api/auth/signup
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "securePass123"
+* 📬 Sample JSON requests
+* 💌 JSON responses
+* 🧪 Alternate/Edge case responses
+* 📂 Grouped by module (Auth, Blog, Like, etc.)
+
+---
+
+## 🗂️ Database Schema
+
+```ts
+User {
+  name: String,
+  email: String,
+  password: String,
+  otp: String,
+  otpExpiry: Date
 }
-```
 
-```json
-// /api/auth/login
-{
-  "email": "john@example.com",
-  "password": "securePass123"
+Post {
+  title: String,
+  content: String,
+  author: ObjectId(User),
+  tagid: ObjectId(Tag),
+  createdAt,
+  updatedAt
 }
-```
 
-```json
-// /api/auth/send-otp
-{
-  "email": "john@example.com"
+Comment {
+  content: String,
+  blogid: ObjectId(Post),
+  userid: ObjectId(User)
 }
-```
 
-```json
-// /api/auth/login/verify
-{
-  "email": "john@example.com",
-  "otp": "123456"
+Like {
+  blogid: ObjectId(Post),
+  userid: ObjectId(User)
 }
-```
 
-```json
-// /api/auth/deleteAuthor
-{
-  "email": "john@example.com",
-  "password": "securePass123"
+Follower {
+  follower: ObjectId(User),
+  author: ObjectId(User)
 }
 ```
 
 ---
+## 📢 Contact
 
-### 📝 Blog APIs
+| Platform | Link                                                     |
+| -------- | -------------------------------------------------------- |
+| Email    | [bhvain.sachaniya.200@gmail.com](bhavin.sachaniya.2oo@gmail.com) |
+| GitHub   | [@bhavinsachaniya](https://github.com/bhavinsachaniya)       |
 
-```json
-// /api/blog/createBlog
-{
-  "title": "My First Blog",
-  "blog": "Some awesome content here...",
-  "author": "authorObjectId"
-}
-```
-
----
-
-### 👥 Follow/Unfollow APIs
-
-```json
-// /api/auth/followUser
-{
-  "followerId": "user1ObjectId",
-  "authorId": "user2ObjectId"
-}
-```
-
-```json
-// /api/auth/unfollowUser
-{
-  "followerId": "user1ObjectId",
-  "authorId": "user2ObjectId"
-}
-```
-
----
-
-## 🌐 License
-
-This project is open source and free to use under the [MIT License](LICENSE).
-
----
-
-## 🚀 One-Step Setup Command
-
-```bash
-git clone <your-repo-url> && \
-cd <your-repo-name> && \
-npm install && \
-echo -e "MONGO_URI=your_mongo_uri\nJWT_SECRET=your_jwt_secret\nEMAIL_USER=your_email\nEMAIL_PASS=your_email_password" > .env && \
-npm start
-```
-
-> 🛠️ Replace:
-> - `your-repo-url` with your GitHub repo URL  
-> - `your-repo-name` with your project folder name  
-> - `.env` values with your real credentials
+> ✨ Plug this backend into React, Vue, Next.js or even Flutter frontend to build your full-stack blog app.

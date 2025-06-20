@@ -1,4 +1,4 @@
-const { default: mongoose } = require('mongoose');
+const mongoose  = require('mongoose');
 const follower = require('../models/follower.Model');
 
 const followUser= async (req,res) => {
@@ -56,52 +56,59 @@ const unfollowUser = async  (req,res) => {
     }
 }
 
-
-const getFollowers = async  (req,res) => {
-
-    try{
-        const {userId} = req.body;
+const getFollowers = async (req, res) => {
+    const { userId } = req.body;
+    try {
+        
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "userId is required",
+            });
+        }
 
         const followers = await follower.aggregate([
             {
-                $match:{ author: new mongoose.Types.ObjectId(userId)}
+                $match: {
+                    author: new mongoose.Types.ObjectId(userId),
+                },
             },
             {
-                $lookup:{
-                    from:'users',
-                    localField:'follower',
-                    foreignField:'_id',
-                    as:'followerDetails'
-                }
+                $lookup: {
+                    from: 'users',
+                    localField: 'follower',
+                    foreignField: '_id',
+                    as: 'followerDetails',
+                },
             },
-            {$unwind:'$followerDetails'},
             {
-                $project:{
-                    _id:0,
-                    followerId:'$follower',
-                    name:'$followerDetails.name',
-                    email:'$followerDetails.email'
-                }
-            }
+                $unwind: {
+                    path: '$followerDetails',
+                    preserveNullAndEmptyArrays: false, 
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    followerId: '$follower',
+                    name: '$followerDetails.name',
+                    email: '$followerDetails.email',
+                },
+            },
         ]);
 
         return res.status(200).json({
             success: true,
-            followers
+            followers,
         });
-
-
-
-    }
-    catch(error){
-        return res.status(400).json({
+    } catch (error) {
+        return res.status(500).json({
             success: false,
-            error: error.message
-        })
+            message: "Internal Server Error",
+            error: error.message,
+        });
     }
-
 };
-
 
 const getFollowing  = async (req,res) => {
     try{

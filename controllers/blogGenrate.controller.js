@@ -3,40 +3,52 @@ const mongoose = require('mongoose');
 const post = require('../models/blogModel');
 const User = require('../models/userModel');
 
+
 const createBlog = async (req, res) => {
-
     try {
-
         const { title, blog, author } = req.body;
 
         if (!title || !blog || !author) {
-            res.status(404).json({ message: "All Field is required" })
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
         }
 
+        // Find author by name
+        const authorExists = await User.findOne({ name: author });
+
+        if (!authorExists) {
+            return res.status(404).json({
+                success: false,
+                message: "Author does not exist"
+            });
+        }
+
+        // Use author's ObjectId
         const newBlog = new post({
-            title: title,
+            title,
             content: blog,
-            author: author
+            author: authorExists._id
         });
 
         await newBlog.save();
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
-            message: "Post Created Sucessfully",
+            message: "Post created successfully",
             data: newBlog
-        })
+        });
 
-    }
-    catch (err) {
-        return res.status(501).json({
-            sucess: false,
-            message: "Getting a problem in creating the blog",
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Error creating the blog",
             error: err.message
-        })
+        });
     }
-
 };
+
 
 //! write code for read all available blog
 
@@ -95,11 +107,16 @@ const authorAllBlog = async (req, res) => {
 
         const allBlog = await post.find({ author });
 
+        const filterdata = allBlog.map(blog => ({
+            title: blog.title,
+            content: blog.content,
+            author: blog.author
+        }))
 
         return res.status(200).json({
             success: true,
             message: "All blogs fetched successfully",
-            data: allBlog
+            data: filterdata
         });
 
     } catch (error) {

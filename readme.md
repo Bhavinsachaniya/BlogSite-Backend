@@ -1,4 +1,4 @@
-# 📝 Blog API – Full-Stack Backend (NodeJS + Express + MongoDB)
+# 📝 Blogsite – Backend System (NodeJS + Express + MongoDB)
 
 > A secure and modular REST API backend for a **Blogging Platform** enabling user authentication (JWT & OTP), blog publishing, commenting, liking, and follow system between users.
 

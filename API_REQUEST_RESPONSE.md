@@ -303,24 +303,3 @@ README.md: |
       Authorization: Bearer <your-jwt-token>
 
   ---
-
-  ## 🤝 CONTRIBUTING
-
-  Feel free to:
-  - Fork the repo 🙌  
-  - Raise issues 🐛  
-  - Suggest features ✨  
-  - Submit pull requests 🚀
-
-  ---
-
-  ## ⚖️ LICENSE
-
-  Open-sourced under the MIT License.
-
-  ---
-
-  ## 📧 CONTACT
-
-  - GitHub: https://github.com/yourusername
-  - Email: youremail@example.com

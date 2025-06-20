@@ -1,27 +1,6 @@
 # 📝 Blogsite – Backend System (NodeJS + Express + MongoDB)
 
 > A secure and modular REST API backend for a **Blogging Platform** enabling user authentication (JWT & OTP), blog publishing, commenting, liking, and follow system between users.
-
----
-
-## 📖 Table of Contents
-
-* [🧠 About](#-about)
-* [✨ Features](#-features)
-* [📦 Folder Structure](#-folder-structure)
-
-  * [📁 Code Tree](#code-structure)
-  * [🔍 Folder Breakdown](#-folder-breakdown--details)
-* [⚙️ Tech Stack](#-tech-stack)
-* [🚀 Setup & Installation](#-setup--installation)
-* [🔑 Environment Variables](#-environment-variables)
-* [📡 API Endpoints](#-api-endpoints)
-* [📨 API Request / Response Samples (All)](#-api-request--response-samples-all)
-* [🗂️ Database Schema](#-database-schema)
-* [🧪 Testing](#-testing)
-* [🤝 Contributing](#-contributing)
-* [📄 License](#-license)
-
 ---
 
 ## 🧠 About

@@ -56,7 +56,7 @@ const readAll = async (req, res) => {
 
     try {
 
-        const readAllblog = await post.find();
+        const readAllblog = await post.find().populate('author', 'name');;
 
         if (readAllblog.length === 0) {
             return res.status(404).json({

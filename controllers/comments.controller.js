@@ -14,8 +14,8 @@ const allComments = async (req, res) => {
                 message: "blogId is required"
             });
         }
-
-        const allComments = await Comment.find({ blogid: blogId });
+        
+        const allComments = await Comment.find({ blogid: blogId }).populate('userid', 'name');
 
         return res.status(200).json({
             success: true,

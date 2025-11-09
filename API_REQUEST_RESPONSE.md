@@ -156,7 +156,10 @@
       "_id": "blogId",
       "title": "Blog 1",
       "content": "Blog content",
-      "author": "authorId"
+      "author": {
+        "_id":"authorId",
+        "name":"author name"
+      }
     }
   ]
 }

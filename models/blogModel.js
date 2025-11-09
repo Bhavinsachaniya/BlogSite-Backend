@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+require('./userModel');
 
 const postSchema = new mongoose.Schema({
     title:{
@@ -11,7 +12,7 @@ const postSchema = new mongoose.Schema({
     },
     author:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
+        ref:'Users',
         required:true,
     },
     createdAt:{

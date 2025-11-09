@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+require('./userModel');
 const commentSchema = mongoose.Schema({
     content:{
         type: String,

@@ -256,7 +256,10 @@
     {
       "_id": "commentId",
       "content": "Great job!",
-      "user": "userId",
+      "user": {
+        "_id":"user id",
+        "name":"user name"
+      },
       "blogId": "blogId"
     }
   ]

@@ -1,46 +1,40 @@
+// 1. Make sure to require nodemailer at the top
+const nodemailer = require('nodemailer');
 
-
-var nodemailer = require('nodemailer');
-
-var sendEmail = function sendEmail(email, subject, text) {
-  var transporter;
-  return regeneratorRuntime.async(function sendEmail$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          _context.prev = 0;
-          transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASS
-            }
-          });
-          _context.next = 4;
-          return regeneratorRuntime.awrap(transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: subject,
-            text: text
-          }));
-
-        case 4:
-          console.log('✅ Email sent successfully');
-          _context.next = 11;
-          break;
-
-        case 7:
-          _context.prev = 7;
-          _context.t0 = _context["catch"](0);
-          console.error('❌ Error sending email:', _context.t0.message);
-          throw _context.t0;
-
-        case 11:
-        case "end":
-          return _context.stop();
+// 2. Define the function as an 'async' function
+// This allows you to use the 'await' keyword inside it
+const sendEmail = async (email, subject, text) => {
+  try {
+    // 3. Create the transporter object
+    // It's good practice to create this inside the function if your credentials
+    // might not be available when the module first loads.
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER, // Your email from .env
+        pass: process.env.EMAIL_PASS  // Your App Password from .env
       }
-    }
-  }, null, null, [[0, 7]]);
+    });
+
+    // 4. Use 'await' to send the mail and wait for the result
+    // This makes the asynchronous operation look clean and synchronous
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: subject,
+      text: text
+    });
+
+    console.log('✅ Email sent successfully');
+
+  } catch (error) {
+    // 5. Catch any errors that occur during the process
+    console.error('❌ Error sending email:', error.message);
+
+    // Optional: re-throw the error if you want the calling function to handle it
+    // throw error; 
+  }
 };
 
+// 6. Export the function so you can use it in other files
 module.exports = sendEmail;
